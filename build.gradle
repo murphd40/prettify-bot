@@ -1,5 +1,8 @@
 apply plugin: 'application'
 
+task stage(dependsOn: ['build', 'clean'])
+build.mustRunAfter clean
+
 repositories {
   jcenter()
 }
@@ -11,6 +14,8 @@ dependencies {
   compile "io.dropwizard:dropwizard-core:$DROPWIZARD_VERSION"
   compile "io.dropwizard:dropwizard-assets:$DROPWIZARD_VERSION"
   compile "com.squareup.okhttp3:logging-interceptor:$LOGGINGINTERCEPTOR_VERSION"
+
+  testCompile "junit:junit:+"
 }
 
 distributions {
