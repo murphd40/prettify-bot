@@ -39,3 +39,6 @@ gradle-app.setting
 ## Idea
 .idea
 
+## Ignore folder
+/ignore/
+
