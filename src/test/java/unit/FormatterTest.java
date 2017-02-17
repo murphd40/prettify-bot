@@ -4,6 +4,7 @@ import static org.hamcrest.core.Is.is;
 import static org.junit.Assert.assertThat;
 
 import app.workspace.format.Prettifier;
+import org.junit.Ignore;
 import org.junit.Test;
 
 public class FormatterTest {
@@ -17,6 +18,7 @@ public class FormatterTest {
         assertThat(result, is(input));
     }
 
+    @Ignore
     @Test
     public void jsonTest() {
         String input = "{\"key1\":\"value1\",\"inner\":{\"innerKey1\":\"innerValue1\"},\"list\":[{\"entry\":\"1\"},{\"entry\":\"2\"}]}";
