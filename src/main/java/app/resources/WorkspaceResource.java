@@ -1,5 +1,8 @@
 package app.resources;
 
+import static app.resources.MessageTypes.MESSAGE_CREATED;
+import static app.workspace.format.Prettifier.Style.json;
+
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.nio.charset.StandardCharsets;
@@ -7,9 +10,11 @@ import java.security.InvalidKeyException;
 import java.security.NoSuchAlgorithmException;
 import java.util.Collections;
 import java.util.Formatter;
+import java.util.regex.Pattern;
 
 import javax.crypto.Mac;
 import javax.crypto.spec.SecretKeySpec;
+import javax.validation.constraints.NotNull;
 import javax.ws.rs.Consumes;
 import javax.ws.rs.CookieParam;
 import javax.ws.rs.GET;
@@ -27,16 +32,20 @@ import javax.ws.rs.core.UriInfo;
 
 import app.workspace.WorkspaceClient;
 import app.workspace.auth.AuthManager;
+import app.workspace.format.Prettifier;
 import app.workspace.model.Annotation;
 import app.workspace.model.Message;
 import app.workspace.model.OauthResponse;
 import app.workspace.model.WebhookEvent;
 import com.google.common.io.CharStreams;
+import org.apache.commons.lang3.StringUtils;
 import retrofit2.http.Body;
 
 @Path("")
 @Produces(MediaType.APPLICATION_JSON)
 public class WorkspaceResource {
+
+    private static final String ACTION_PATTERN = "^@prettify\\s*";
 
     @Context
     private UriInfo uriInfo;
@@ -87,23 +96,45 @@ public class WorkspaceResource {
     @Path("webhook")
     @POST
     public Response webhookCallback(@HeaderParam("X-OUTBOUND-TOKEN") String outboundToken,
-            @Body WebhookEvent webhookEvent) throws NoSuchAlgorithmException, InvalidKeyException {
+            @Body @NotNull WebhookEvent webhookEvent) throws NoSuchAlgorithmException, InvalidKeyException {
+
         if ("verification".equalsIgnoreCase(webhookEvent.getType())) {
             return buildVerificationResponse(webhookEvent);
         }
 
         //if it wasn't our app that sent it... No point talking to ourselves.
         if (!authManager.getAppId().equals(webhookEvent.getUserId())) {
-            //TODO Add code here to respond to a webhook.
-            // You will likely want to do different things depending on the type of the webhookEvent.
 
-            // For now just post a message saying we received an event
-            workspaceClient.createMessageAsApp(webhookEvent.getSpaceId(),
-                    buildMessage("Received event",
-                            String.format("Received event with type %s", webhookEvent.getType())));
+            String eventType = StringUtils.defaultString(webhookEvent.getType());
+
+            switch (eventType) {
+                case MESSAGE_CREATED:
+                    handleMessageCreated(webhookEvent);
+            }
+
+//            // For now just post a message saying we received an event
+//            workspaceClient.createMessageAsApp(webhookEvent.getSpaceId(),
+//                    buildMessage("Received event",
+//                            String.format("Received event with type %s", webhookEvent.getType())));
         }
 
         return Response.ok().build();
+    }
+
+    private void handleMessageCreated(WebhookEvent webhookEvent) {
+        String content = StringUtils.defaultString(webhookEvent.getContent());
+
+        if (actionRequest(content)) {
+            String contentToFormat = content.split(ACTION_PATTERN, 1)[0];
+
+            String formattedContent = Prettifier.prettify(contentToFormat, json);
+
+            workspaceClient.createMessageAsApp(webhookEvent.getSpaceId(), buildMessage("formatted:", formattedContent));
+        }
+    }
+
+    private boolean actionRequest(String content) {
+        return Pattern.matches(ACTION_PATTERN, content);
     }
 
     /**

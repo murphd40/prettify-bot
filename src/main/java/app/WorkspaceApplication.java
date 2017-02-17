@@ -19,6 +19,10 @@ public class WorkspaceApplication extends Application<WorkspaceConfiguration> {
         new WorkspaceApplication().run(args);
     }
 
+    protected WorkspaceService workspaceService;
+
+    protected AuthService authService;
+
     @Override
     public String getName() {
         return "hello-world";
@@ -32,12 +36,8 @@ public class WorkspaceApplication extends Application<WorkspaceConfiguration> {
     @Override
     public void run(WorkspaceConfiguration config,
             Environment environment) {
-        ObjectMapper mapper = environment.getObjectMapper();
-        mapper.configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES, false);
-        Retrofit retrofit = new Retrofit.Builder().addConverterFactory(JacksonConverterFactory.create(mapper)).baseUrl(config.getWorkspaceApiUrl()).build();
 
-        WorkspaceService workspaceService = retrofit.create(WorkspaceService.class);
-        AuthService authService = retrofit.create(AuthService.class);
+        initServices(config, environment);
 
         AuthManager authManager = new AuthManager(authService, config.getAppId(), config.getAppSecret(), config.getWebhookSecret(), config.getWorkspaceApiUrl());
         WorkspaceClient workspaceClient = new WorkspaceClient(workspaceService, authManager);
@@ -48,5 +48,16 @@ public class WorkspaceApplication extends Application<WorkspaceConfiguration> {
 
         // TODO This is the app entry point. You can do what you like starting from here.
         // For example send a graphql request to make a space, and then use workspaceClient to post a message to a space by its id.
+    }
+
+    protected void initServices(WorkspaceConfiguration config,
+        Environment environment) {
+
+        ObjectMapper mapper = environment.getObjectMapper();
+        mapper.configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES, false);
+        Retrofit retrofit = new Retrofit.Builder().addConverterFactory(JacksonConverterFactory.create(mapper)).baseUrl(config.getWorkspaceApiUrl()).build();
+
+        workspaceService = retrofit.create(WorkspaceService.class);
+        authService = retrofit.create(AuthService.class);
     }
 }
