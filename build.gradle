@@ -1,21 +1,16 @@
-apply plugin: 'application'
-
-task stage(type: Copy, dependsOn: [clean, build]) {
-    from jar.archivePath
-    into project.rootDir
-    rename {
-        'app.jar'
-    }
+buildscript {
+  repositories {
+    jcenter()
+  }
 }
-stage.mustRunAfter(clean)
 
-clean << {
-    project.file('app.jar').delete()
-}
+apply plugin: "application"
 
 repositories {
   jcenter()
 }
+
+mainClassName = "app/WorkspaceApplication"
 
 dependencies {
   compile "com.google.code.gson:gson:$GSON_VERSION"
@@ -28,34 +23,6 @@ dependencies {
   testCompile "junit:junit:+"
 }
 
-distributions {
-  main {
-    contents {
-      from { "config.yml" }
-    }
-  }
+task stage {
+  dependsOn installDist
 }
-
-mainClassName = 'app.WorkspaceApplication server "`dirname $0`/../config.yml"'
-
-jar {
-    baseName = 'app'
-    version = '0.1.0'
-}
-
-run {
-  args 'server', 'config.yml'
-  main = 'app.WorkspaceApplication'
-}
-
-task processManifest {
-  doLast{
-    copy{
-      from 'src/main/resources/manifest.yml'
-      into rootDir
-      filter(org.apache.tools.ant.filters.ReplaceTokens, tokens: [APP_NAME: rootProject.name])
-    }
-  }
-}
-
-build.dependsOn processManifest
