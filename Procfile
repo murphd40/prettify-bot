@@ -1,1 +1,1 @@
-web: java -jar prettify-bot.jar
+web: java -jar build/libs/prettify-bot.jar
