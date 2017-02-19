@@ -1,10 +1,20 @@
-apply plugin: 'application'
+buildscript {
+  repositories {
+    jcenter()
+  }
+}
 
-task stage(dependsOn: ['build', 'clean'])
-build.mustRunAfter clean
+apply plugin: "application"
 
 repositories {
   jcenter()
+}
+
+mainClassName = 'app.WorkspaceApplication server "`dirname $0`/../config.yml"'
+
+run {
+  args 'server', 'config.yml'
+  main = 'app.WorkspaceApplication'
 }
 
 dependencies {
@@ -19,28 +29,14 @@ dependencies {
 }
 
 distributions {
-  main {
-    contents {
-      from { "config.yml" }
-    }
-  }
+    main {
+	    baseName = 'prettify-bot'
+		contents {
+		    from {'src/main/resources'}
+		}
+	}
 }
 
-mainClassName = 'app.WorkspaceApplication server "`dirname $0`/../config.yml"'
-
-run {
-  args 'server', 'config.yml'
-  main = 'app.WorkspaceApplication'
+task stage {
+  dependsOn installDist
 }
-
-task processManifest {
-  doLast{
-    copy{
-      from 'src/main/resources/manifest.yml'
-      into rootDir
-      filter(org.apache.tools.ant.filters.ReplaceTokens, tokens: [APP_NAME: rootProject.name])
-    }
-  }
-}
-
-build.dependsOn processManifest
