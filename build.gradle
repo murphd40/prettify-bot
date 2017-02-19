@@ -39,7 +39,7 @@ distributions {
 mainClassName = 'app.WorkspaceApplication server "`dirname $0`/../config.yml"'
 
 jar {
-    baseName = 'prettify-bot'
+    baseName = 'app'
     version = '0.1.0'
 }
 
