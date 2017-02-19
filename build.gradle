@@ -10,7 +10,12 @@ repositories {
   jcenter()
 }
 
-mainClassName = "app/WorkspaceApplication"
+mainClassName = 'app.WorkspaceApplication server "`dirname $0`/../config.yml"'
+
+run {
+  args 'server', 'config.yml'
+  main = 'app.WorkspaceApplication'
+}
 
 dependencies {
   compile "com.google.code.gson:gson:$GSON_VERSION"
