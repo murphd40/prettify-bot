@@ -1,1 +1,1 @@
-web: build/install/prettify-bot/bin/prettify-bot
+web: java -jar prettify-bot.jar
