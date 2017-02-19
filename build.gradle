@@ -28,6 +28,15 @@ dependencies {
   testCompile "junit:junit:+"
 }
 
+distributions {
+    main {
+	    baseName = 'prettify-bot'
+		contents {
+		    from {'src/main/resources'}
+		}
+	}
+}
+
 task stage {
   dependsOn installDist
 }
