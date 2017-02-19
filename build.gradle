@@ -38,6 +38,11 @@ distributions {
 
 mainClassName = 'app.WorkspaceApplication server "`dirname $0`/../config.yml"'
 
+jar {
+    baseName = 'prettify-bot'
+    version = '0.1.0'
+}
+
 run {
   args 'server', 'config.yml'
   main = 'app.WorkspaceApplication'
