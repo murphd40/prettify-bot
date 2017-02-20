@@ -1,42 +1,44 @@
-buildscript {
-  repositories {
-    jcenter()
-  }
-}
-
-apply plugin: "application"
+apply plugin: 'application'
 
 repositories {
-  jcenter()
+    jcenter()
+}
+
+dependencies {
+    compile "com.google.code.gson:gson:$GSON_VERSION"
+    compile "com.squareup.retrofit2:retrofit:$RETROFIT_VERSION"
+    compile "com.squareup.retrofit2:converter-jackson:$RETROFIT_VERSION"
+    compile "io.dropwizard:dropwizard-core:$DROPWIZARD_VERSION"
+    compile "io.dropwizard:dropwizard-assets:$DROPWIZARD_VERSION"
+    compile "com.squareup.okhttp3:logging-interceptor:$LOGGINGINTERCEPTOR_VERSION"
+
+    testCompile "junit:junit:+"
+}
+
+distributions {
+    main {
+        contents {
+            from { "config.yml" }
+        }
+    }
 }
 
 mainClassName = 'app.WorkspaceApplication server "`dirname $0`/../config.yml"'
 
 run {
-  args 'server', 'config.yml'
-  main = 'app.WorkspaceApplication'
+    args 'server', 'config.yml'
+    main = 'app.WorkspaceApplication'
 }
 
-dependencies {
-  compile "com.google.code.gson:gson:$GSON_VERSION"
-  compile "com.squareup.retrofit2:retrofit:$RETROFIT_VERSION"
-  compile "com.squareup.retrofit2:converter-jackson:$RETROFIT_VERSION"
-  compile "io.dropwizard:dropwizard-core:$DROPWIZARD_VERSION"
-  compile "io.dropwizard:dropwizard-assets:$DROPWIZARD_VERSION"
-  compile "com.squareup.okhttp3:logging-interceptor:$LOGGINGINTERCEPTOR_VERSION"
-
-  testCompile "junit:junit:+"
+task processManifest {
+    doLast{
+        copy{
+            from 'src/main/resources/manifest.yml'
+            into rootDir
+            filter(org.apache.tools.ant.filters.ReplaceTokens, tokens: [APP_NAME: rootProject.name])
+        }
+    }
 }
 
-distributions {
-    main {
-	    baseName = 'prettify-bot'
-		contents {
-		    from {'src/main/resources'}
-		}
-	}
-}
+build.dependsOn processManifest
 
-task stage {
-  dependsOn installDist
-}

@@ -10,10 +10,10 @@ server:
     applicationConnectors:
         - type: http
           port: 8080
-        - type: https
-          port: 8443
-          keyStorePath: skeleton.keystore
-          keyStorePassword: skeleton
-          validateCerts: false
+#        - type: https
+#          port: 8443
+#          keyStorePath: skeleton.keystore
+#          keyStorePassword: skeleton
+#          validateCerts: false
 # trustStorePath is only necessary on macos, replace JAVA_HOME with your own java home
-          trustStorePath: JAVA_HOME/jre/lib/security/cacerts
+#          trustStorePath: JAVA_HOME/jre/lib/security/cacerts
