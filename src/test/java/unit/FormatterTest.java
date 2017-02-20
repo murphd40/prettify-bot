@@ -10,8 +10,17 @@ import org.junit.Test;
 public class FormatterTest {
 
     @Test
-    public void unknownStringTest() {
+    public void defaultStyleSimpleTest() {
         String input = "not json";
+
+        String result = Prettifier.prettify(input, Prettifier.Style.unknown);
+
+        assertThat(result, is(input));
+    }
+
+    @Test
+    public void defaultStyleJsonTest() {
+        String input = "{\"key1\":\"value1\",\"inner\":{\"innerKey1\":\"innerValue1\"},\"list\":[{\"entry\":\"1\"},{\"entry\":\"2\"}]}";
 
         String result = Prettifier.prettify(input, Prettifier.Style.unknown);
 
