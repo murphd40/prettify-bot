@@ -2,6 +2,7 @@ package integration;
 
 import java.io.IOException;
 
+import app.resources.MessageTypes;
 import app.workspace.model.WebhookEvent;
 import org.junit.Test;
 import retrofit2.Call;
@@ -13,7 +14,8 @@ public class MyTest extends BaseIntegrationTest{
     public void myTest() throws IOException {
 
         WebhookEvent event = new WebhookEvent();
-        event.setContent("content");
+        event.setContent("@prettify content @prettify content");
+        event.setType(MessageTypes.MESSAGE_CREATED);
         Call<Void> call = testRequestService.webhookRequest(event);
 
         Response<Void> response = call.execute();

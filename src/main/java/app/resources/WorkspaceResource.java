@@ -125,7 +125,7 @@ public class WorkspaceResource {
         String content = StringUtils.defaultString(webhookEvent.getContent());
 
         if (actionRequest(content)) {
-            String contentToFormat = content.split(ACTION_PATTERN, 1)[0];
+            String contentToFormat = content.split(ACTION_PATTERN)[0];
 
             String formattedContent = "```\n" + Prettifier.prettify(contentToFormat, json) + "\n```";
 
@@ -134,7 +134,7 @@ public class WorkspaceResource {
     }
 
     private boolean actionRequest(String content) {
-        return Pattern.matches(ACTION_PATTERN, content);
+        return Pattern.compile(ACTION_PATTERN).matcher(content).find();
     }
 
     /**
