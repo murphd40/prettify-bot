@@ -1,6 +1,7 @@
 package app.workspace.format;
 
 import static java.lang.Integer.max;
+import static org.apache.commons.lang3.StringUtils.INDEX_NOT_FOUND;
 
 import java.io.IOException;
 import java.util.Arrays;
@@ -43,7 +44,7 @@ public class Prettifier {
 
             int jsonStart = StringUtils.indexOf(input, '{');
             int jsonEnd = StringUtils.lastIndexOf(input, '}');
-            String json = input.substring(jsonStart, jsonEnd);
+            String json = (jsonStart == INDEX_NOT_FOUND) ? input : input.substring(jsonStart, jsonEnd);
             Object jsonObj = OBJECT_MAPPER.readValue(json, Object.class);
 
             builder.append(input.substring(0, jsonStart));
@@ -51,7 +52,7 @@ public class Prettifier {
             builder.append(input.substring(jsonEnd));
 
             output = builder.toString();
-        } catch (IOException e) {
+        } catch (Exception e) {
             output = prettifyDefault(input);
         }
 
