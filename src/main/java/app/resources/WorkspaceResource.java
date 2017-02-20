@@ -45,7 +45,7 @@ import retrofit2.http.Body;
 @Produces(MediaType.APPLICATION_JSON)
 public class WorkspaceResource {
 
-    private static final String ACTION_PATTERN = "^@prettify\\s*";
+    private static final String ACTION_PATTERN = "^\\s*@prettify\\s+";
 
     @Context
     private UriInfo uriInfo;
@@ -125,7 +125,7 @@ public class WorkspaceResource {
         String content = StringUtils.defaultString(webhookEvent.getContent());
 
         if (actionRequest(content)) {
-            String contentToFormat = content.split(ACTION_PATTERN)[0];
+            String contentToFormat = content.split(ACTION_PATTERN)[1];
 
             String formattedContent = "```\n" + Prettifier.prettify(contentToFormat, json) + "\n```";
 

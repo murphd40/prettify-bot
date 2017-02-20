@@ -14,7 +14,7 @@ public class MyTest extends BaseIntegrationTest{
     public void myTest() throws IOException {
 
         WebhookEvent event = new WebhookEvent();
-        event.setContent("@prettify content @prettify content");
+        event.setContent("@prettify {\"key\": \"value\"}");
         event.setType(MessageTypes.MESSAGE_CREATED);
         Call<Void> call = testRequestService.webhookRequest(event);
 
