@@ -127,7 +127,7 @@ public class WorkspaceResource {
         if (actionRequest(content)) {
             String contentToFormat = content.split(ACTION_PATTERN)[1];
 
-            String formattedContent = "```\n" + Prettifier.prettify(contentToFormat, json) + "\n```";
+            String formattedContent = "```" + Prettifier.prettify(contentToFormat, json) + "```";
 
             workspaceClient.createMessageAsApp(webhookEvent.getSpaceId(), buildMessage("formatted:", formattedContent));
         }

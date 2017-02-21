@@ -28,13 +28,7 @@ public class MyTest extends BaseIntegrationTest{
     public void debugTest() throws IOException {
 
         WebhookEvent event = new WebhookEvent();
-        event.setContent("@prettify mutation {\n" +
-            "createSpace(\n" +
-            "input: {\n" +
-            "title: \"title\"\n" +
-            "members: []\n" +
-            ")\n" +
-            "}");
+        event.setContent("@prettify { \"hello\": { \"hey\": \"ho\" } }");
         event.setType(MessageTypes.MESSAGE_CREATED);
         Call<Void> call = testRequestService.webhookRequest(event);
 
