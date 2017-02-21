@@ -44,11 +44,12 @@ public class Prettifier {
 
             int jsonStart = StringUtils.indexOf(input, '{');
             int jsonEnd = StringUtils.lastIndexOf(input, '}');
-            String json = (jsonStart == INDEX_NOT_FOUND) ? input : input.substring(jsonStart, jsonEnd);
+            String json = (jsonStart == INDEX_NOT_FOUND) ? input : input.substring(jsonStart, jsonEnd+1);
             Object jsonObj = OBJECT_MAPPER.readValue(json, Object.class);
 
             builder.append(input.substring(0, jsonStart));
             builder.append(OBJECT_MAPPER.writerWithDefaultPrettyPrinter().writeValueAsString(jsonObj));
+            builder.append("\n");
             builder.append(input.substring(jsonEnd));
 
             output = builder.toString();
@@ -61,9 +62,12 @@ public class Prettifier {
 
     private static String prettifyDefault(String input) {
 
+        String cleanInput = StringUtils.removePattern(input, "\\s+");
+        cleanInput = StringUtils.replace(cleanInput, ":", ": ");
+
         StringBuilder builder = new StringBuilder();
 
-        char[] chars = input.toCharArray();
+        char[] chars = cleanInput.toCharArray();
         int indent = 0;
 
         int lineStart = 0;
@@ -72,7 +76,7 @@ public class Prettifier {
 
             if (ArrayUtils.contains(NEW_LINE_PREFIXES, c)) {
                 // add this line to string builder
-                String line = input.substring(lineStart, i+1).trim();
+                String line = cleanInput.substring(lineStart, i+1).trim();
                 builder.append(indent(indent)).append(line).append("\r\n");
 
                 // manage indents
@@ -83,7 +87,7 @@ public class Prettifier {
                 lineStart = i+1;
             } else if (ArrayUtils.contains(NEW_LINE_SUFFIXES, c)) {
                 // add this line to string builder
-                String line = input.substring(lineStart, i).trim();
+                String line = cleanInput.substring(lineStart, i).trim();
                 builder.append(indent(indent)).append(line).append("\r\n");
 
                 if (ArrayUtils.contains(DECREASE_INDENT_CHARS, c)) {
@@ -94,7 +98,7 @@ public class Prettifier {
             }
         }
         // add final line
-        builder.append(indent(indent)).append(input.substring(lineStart));
+        builder.append(indent(indent)).append(cleanInput.substring(lineStart));
 
         return builder.toString().trim();
 

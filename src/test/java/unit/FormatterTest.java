@@ -4,6 +4,8 @@ import static org.hamcrest.core.Is.is;
 import static org.junit.Assert.assertThat;
 
 import app.workspace.format.Prettifier;
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import org.junit.Ignore;
 import org.junit.Test;
 
@@ -20,7 +22,7 @@ public class FormatterTest {
 
     @Test
     public void defaultStyleJsonTest() {
-        String input = "{\"key1\":\"value1\",\"inner\":{\"innerKey1\":\"innerValue1\"},\"list\":[{\"entry\":\"1\"},{\"entry\":\"2\"}]}";
+        String input = "{\"key1\":\"value1\"            \n\n\n\n,\"inner\":{\"innerKey1\":\"innerValue1\"},\"list\":[{\"entry\":\"1\"},{\"entry\":\"2\"}]}";
 
         String result = Prettifier.prettify(input, Prettifier.Style.unknown);
 
@@ -51,12 +53,12 @@ public class FormatterTest {
     }
 
     @Test
-    public void invalidJsonTest() {
+    public void jsonWithExtraTest() {
 
-        String input = "{\n" +
-            "\t\"key1\": \"value1\"\n" +
+        String input = "data {\n" +
+            "\t\"key1\": \"value1\",\n" +
             "\t\"key2\": \"value2\"\n" +
-            "}";
+            "} hello";
 
         String result = Prettifier.prettify(input, Prettifier.Style.json);
 
