@@ -3,8 +3,6 @@ package app.workspace.format;
 import static java.lang.Integer.max;
 import static org.apache.commons.lang3.StringUtils.INDEX_NOT_FOUND;
 
-import java.io.IOException;
-import java.util.Arrays;
 import java.util.function.Function;
 import java.util.stream.IntStream;
 
@@ -62,12 +60,9 @@ public class Prettifier {
 
     private static String prettifyDefault(String input) {
 
-        String cleanInput = StringUtils.removePattern(input, "\\s+");
-        cleanInput = StringUtils.replace(cleanInput, ":", ": ");
-
         StringBuilder builder = new StringBuilder();
 
-        char[] chars = cleanInput.toCharArray();
+        char[] chars = input.toCharArray();
         int indent = 0;
 
         int lineStart = 0;
@@ -76,7 +71,7 @@ public class Prettifier {
 
             if (ArrayUtils.contains(NEW_LINE_PREFIXES, c)) {
                 // add this line to string builder
-                String line = cleanInput.substring(lineStart, i+1).trim();
+                String line = tidy(input.substring(lineStart, i+1));
                 builder.append(indent(indent)).append(line).append("\r\n");
 
                 // manage indents
@@ -87,7 +82,7 @@ public class Prettifier {
                 lineStart = i+1;
             } else if (ArrayUtils.contains(NEW_LINE_SUFFIXES, c)) {
                 // add this line to string builder
-                String line = cleanInput.substring(lineStart, i).trim();
+                String line = input.substring(lineStart, i).trim();
                 builder.append(indent(indent)).append(line).append("\r\n");
 
                 if (ArrayUtils.contains(DECREASE_INDENT_CHARS, c)) {
@@ -98,7 +93,7 @@ public class Prettifier {
             }
         }
         // add final line
-        builder.append(indent(indent)).append(cleanInput.substring(lineStart));
+        builder.append(indent(indent)).append(input.substring(lineStart));
 
         return builder.toString().trim();
 
@@ -106,6 +101,16 @@ public class Prettifier {
 
     private static String indent(int indent) {
         return IntStream.range(0, indent).mapToObj(i -> "  ").reduce("", String::concat);
+    }
+
+    private static String tidy(String line) {
+        //remove trailing whitespace
+        line = line.trim();
+        //replace all remaining whitespace with a ' '
+        line = StringUtils.replacePattern(line, "\\s+", " ");
+        // add ' ' to any ':' which does not have whitespace after
+        line = StringUtils.replacePattern(line, ":(?!\\s+)", ": ");
+        return line;
     }
 
     private static final char[] INCREASE_INDENT_CHARS = {'{', '['};
