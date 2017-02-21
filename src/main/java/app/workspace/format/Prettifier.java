@@ -48,7 +48,7 @@ public class Prettifier {
             builder.append(input.substring(0, jsonStart));
             builder.append(OBJECT_MAPPER.writerWithDefaultPrettyPrinter().writeValueAsString(jsonObj));
             builder.append("\n");
-            builder.append(input.substring(jsonEnd));
+            builder.append(input.substring(jsonEnd+1).trim());
 
             output = builder.toString();
         } catch (Exception e) {
